@@ -38,8 +38,11 @@
             status.textContent = '🔄 Đang xử lý, vui lòng đợi...';
             resultList.innerHTML = '';
 
+            // Thay URL này bằng URL backend thật sau khi deploy (vd: https://your-app.onrender.com/api/process-links)
+            const API_URL = window.location.hostname === 'localhost' ? '/api/process-links' : 'https://YOUR-BACKEND-URL.com/api/process-links';
+
             try {
-                const response = await fetch('/api/process-links', {
+                const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ urls })
