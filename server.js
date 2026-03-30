@@ -1,9 +1,11 @@
 const express = require('express');
+const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
+app.use(cors()); // Cho phép các domain khác (như GitHub Pages) gọi API
 app.use(express.json());
 app.use(express.static('.')); // Phục vụ các file tĩnh (html, js, json)
 
