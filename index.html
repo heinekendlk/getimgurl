@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Nhập Link Shopee</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; background: #f4f4f9; }
+        textarea { width: 100%; height: 150px; margin-bottom: 10px; padding: 10px; border-radius: 8px; border: 1px solid #ddd; }
+        button { background: #ee4d2d; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        button:disabled { background: #ccc; }
+        .result-list { margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
+        .item { background: white; padding: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); text-align: center; }
+        .item img { max-width: 100%; border-radius: 5px; height: 120px; object-fit: cover; }
+        .status { margin: 10px 0; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h2>Quản lý nhập sản phẩm Shopee</h2>
+    <p>Nhập mỗi link sản phẩm trên một dòng:</p>
+    <textarea id="urlInput" placeholder="https://shopee.vn/..."></textarea>
+    <button id="submitBtn">Bắt đầu xử lý</button>
+    <div id="status" class="status"></div>
+
+    <h3>Sản phẩm vừa thêm:</h3>
+    <div id="resultList" class="result-list"></div>
+
+    <script>
+        const submitBtn = document.getElementById('submitBtn');
+        const urlInput = document.getElementById('urlInput');
+        const status = document.getElementById('status');
+        const resultList = document.getElementById('resultList');
+
+        submitBtn.onclick = async () => {
+            const urls = urlInput.value.split('\n').filter(u => u.trim() !== '');
+            if (urls.length === 0) return alert('Vui lòng nhập link!');
+
+            submitBtn.disabled = true;
+            status.textContent = '🔄 Đang xử lý, vui lòng đợi...';
+            resultList.innerHTML = '';
+
+            try {
+                const response = await fetch('/api/process-links', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ urls })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    status.textContent = `✅ Thành công! Đã thêm ${result.data.length} sản phẩm.`;
+                    renderResults(result.data);
+                    urlInput.value = '';
+                } else {
+                    status.textContent = '❌ Có lỗi xảy ra.';
+                }
+            } catch (err) {
+                status.textContent = '❌ Lỗi kết nối server.';
+            } finally {
+                submitBtn.disabled = false;
+            }
+        };
+
+        function renderResults(data) {
+            resultList.innerHTML = data.map(item => `
+                <div class="item">
+                    <img src="${item.image}" alt="Thumb">
+                    <div style="font-size: 12px; margin-top: 5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        ${item.title}
+                    </div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
