@@ -52,16 +52,17 @@ async function importShopee() {
 
             const data = await response.json();
 
-            if (data && data.imageUrl) {
+            if (data && data.status === 'success' && data.productInfo && data.productInfo.imageUrl) {
+                const info = data.productInfo;
                 currentProducts.push({
                     id: Date.now() + Math.floor(Math.random() * 10000),
-                    title: data.title || "Sản phẩm mới từ Shopee",
-                    image: data.imageUrl,
+                    title: info.productName || "Sản phẩm mới từ Shopee",
+                    image: info.imageUrl,
                     category: "Shopee Import",
                     brand: "Shopee",
-                    oldPrice: parseInt(data.oldPrice) || 0,
-                    newPrice: parseInt(data.price) || 0,
-                    sold: 0,
+                    oldPrice: parseInt(info.oldPrice) || 0,
+                    newPrice: parseInt(info.price) || 0,
+                    sold: parseInt(info.sales) || 0,
                     stockPercent: 100,
                     affiliateUrl: url,
                     isHot: false
