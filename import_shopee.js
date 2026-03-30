@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
 const LINKS_FILE = path.join(__dirname, 'links.txt');
 const PRODUCTS_FILE = path.join(__dirname, 'products.json');
 const IMGURL_FILE = path.join(__dirname, 'imgurl.txt');
@@ -79,6 +81,10 @@ async function importShopee() {
             }
         } catch (error) {
             console.error(`❌ Lỗi xử lý link ${url}:`, error.message);
+        } finally {
+            // Nghỉ 2 giây giữa các request để tránh bị chặn
+            console.log('⏳ Đang nghỉ 2 giây...');
+            await sleep(1500);
         }
     }
 
