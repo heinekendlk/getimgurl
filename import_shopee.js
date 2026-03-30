@@ -3,6 +3,7 @@ const path = require('path');
 
 const LINKS_FILE = path.join(__dirname, 'links.txt');
 const PRODUCTS_FILE = path.join(__dirname, 'products.json');
+const IMGURL_FILE = path.join(__dirname, 'imgurl.txt');
 
 async function importShopee() {
     console.log('🚀 Bắt đầu quá trình import sản phẩm từ links.txt...');
@@ -54,6 +55,10 @@ async function importShopee() {
 
             if (data && data.status === 'success' && data.productInfo && data.productInfo.imageUrl) {
                 const info = data.productInfo;
+                
+                // Lưu riêng link ảnh vào file imgurl.txt
+                fs.appendFileSync(IMGURL_FILE, info.imageUrl + '\n', 'utf8');
+
                 currentProducts.push({
                     id: Date.now() + Math.floor(Math.random() * 10000),
                     title: info.productName || "Sản phẩm mới từ Shopee",
